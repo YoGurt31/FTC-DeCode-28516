@@ -122,7 +122,7 @@ public class ConceptExternalHardwareClass extends LinearOpMode {
 
             robot.setArmPower(arm);
 
-            // Send telemetry messages to explain controls and show robot status
+            // Send telemetry RoadRunner.messages to explain controls and show robot status
             telemetry.addData("Drive", "Left Stick");
             telemetry.addData("Turn", "Right Stick");
             telemetry.addData("Arm Up/Down", "Y & A Buttons");

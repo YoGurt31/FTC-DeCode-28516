@@ -240,7 +240,7 @@ public class SensorOctoQuadLocalization extends LinearOpMode
         }
         if (warn)
         {
-            warnString +="<BR>&nbsp;-&nbsp;Read the code COMMENTS for tuning help.<BR>";
+            warnString +="<BR>&nbsp;-&nbsp;Read the code COMMENTS for RoadRunner.tuning help.<BR>";
 
             if (System.currentTimeMillis() - lastWarnFlashTimeMs > 1000)
             {

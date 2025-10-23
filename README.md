@@ -561,7 +561,7 @@ This is a bug fix only release to address the following four issues.
 * Removes usage of Renderscript.
 * Fixes logspam on app startup of repeated stacktraces relating to `"Failed resolution of: Landroid/net/wifi/p2p/WifiP2pManager$DeviceInfoListener"`
 * Allows disabling bluetooth radio from inspection screen
-* Improves warning messages when I2C devices are not responding
+* Improves warning RoadRunner.messages when I2C devices are not responding
 * Adds support for controlling the RGB LED present on PS4/Etpark gamepads from OpModes
 * Removes legacy Pushbot references from OpMode samples.  Renames "Pushbot" samples to "Robot".  Motor directions reversed to be compatible with "direct Drive" drive train.
 
@@ -842,7 +842,7 @@ Version 5.5 requires Android Studio 4.0 or later.
     * Horizontal scrolling support (no longer word wrapped)
     * Supports pinch-to-zoom
     * Uses a monospaced font
-    * Error messages are highlighted
+    * Error RoadRunner.messages are highlighted
     * New color scheme
 * Attempts to force-stop a runaway/stuck OpMode without restarting the entire app
     * Not all types of runaway conditions are stoppable, but if the user code attempts to talk to hardware during the runaway, the system should be able to capture it.
@@ -888,7 +888,7 @@ Version 5.5 requires Android Studio 4.0 or later.
 * Fixes [SkyStone issue #232](https://github.com/FIRST-Tech-Challenge/SkyStone/issues/232) and
   modifies bulk caching semantics to allow for cache-preserving MANUAL/AUTO transitions.
 * Improves performance when REV 2M distance sensor is unplugged
-* Improves readability of Toast messages on certain devices
+* Improves readability of Toast RoadRunner.messages on certain devices
 * Allows a Driver Station to connect to a Robot Controller after another has disconnected
 * Improves generation of fake serial numbers for UVC cameras which do not provide a real serial number
     * Previously some devices would assign such cameras a serial of `0:0` and fail to open and start streaming
@@ -964,7 +964,7 @@ Version 5.5 requires Android Studio 4.0 or later.
     * Large dropdown lists display properly on lower res screens
     * Disabled buttons are now visually identifiable as disabled
     * A warning is shown if a user selects a TFOD sample, but their device is not compatible
-    * Warning messages in a Blocks OpMode are now visible by default.
+    * Warning RoadRunner.messages in a Blocks OpMode are now visible by default.
 * Adds goBILDA 5201 and 5202 motors to Robot Configurator
 * Adds PIDF Annotation values to AndyMark, goBILDA and TETRIX motor configurations.
     This has the effect of causing the RUN_USING_ENCODERS and RUN_TO_POSITION modes to use
@@ -1045,7 +1045,7 @@ Known issues:
 ## Version 4.2 (built on 18.10.30)
  * Includes fix to avoid deadlock situation with WatchdogMonitor which could result in USB communication errors.
      - Comm error appeared to require that user disconnect USB cable and restart the Robot Controller app to recover.
-     - robotControllerLog.txt would have error messages that included the words "E RobotCore: lynx xmit lock: #### abandoning lock:"
+     - robotControllerLog.txt would have error RoadRunner.messages that included the words "E RobotCore: lynx xmit lock: #### abandoning lock:"
  * Includes fix to correctly list the parent module address for a REV Robotics Expansion Hub in a configuration (.xml) file.
      - Bug in versions 4.0 and 4.1 would incorrect list the address module for a parent REV Robotics device as "1".
      - If the parent module had a higher address value than the daisy-chained module, then this bug would prevent the Robot Controller from communicating with the downstream Expansion Hub.
@@ -1241,7 +1241,7 @@ Changes with verion 3.3 include:
 
 Known issues:
  * Android Studio
-    - After updating to the new v3.3 Android Studio project folder, if you get error messages indicating "InvalidVirtualFileAccessException" then you might need to do a File->Invalidate Caches / Restart to clear the error.
+    - After updating to the new v3.3 Android Studio project folder, if you get error RoadRunner.messages indicating "InvalidVirtualFileAccessException" then you might need to do a File->Invalidate Caches / Restart to clear the error.
  * OnBot Java
     - Sometimes when you push the build button to build all OpModes, the RC returns an error message that the build failed.  If you press the build button a second time, the build typically suceeds.
 
@@ -1567,7 +1567,7 @@ Changes include:
  * Added seconds() and milliseconds() to ElapsedTime for clarity.
  * Added getCallbackCount() to I2cDevice.
  * Added missing clearI2cPortActionFlag.
- * Added code to create log messages while waiting for LinearOpMode shutdown.
+ * Added code to create log RoadRunner.messages while waiting for LinearOpMode shutdown.
  * Fix so Wi-Fi Direct Config activity will no longer launch multiple times.
  * Added the ability to specify an alternate i2c address in software for the Modern Robotics gyro.
 
@@ -1578,7 +1578,7 @@ Changes include:
     - If user attempts to start/restart RC with one or more module missing, it will display a warning but still start up.
     - When running an OpMode, if one or more modules gets disconnected, the RC & DS will display warnings,and robot will keep on working in spite of the missing module(s).
     - If a disconnected module gets physically reconnected the RC will auto detect the module and the user will regain control of the recently connected module.
-    - Warning messages are more helpful (identifies the type of module that’s missing plus its USB serial number).
+    - Warning RoadRunner.messages are more helpful (identifies the type of module that’s missing plus its USB serial number).
  * Code changes to fix the null gamepad reference when users try to reference the gamepads in the init() portion of their OpMode.
  * NXT light sensor output is now properly scaled.  Note that teams might have to readjust their light threshold values in their OpModes.
  * On DS user interface, gamepad icon for a driver will disappear if the matching gamepad is disconnected or if that gamepad gets designated as a different driver.
@@ -1630,16 +1630,16 @@ Changes include:
   - Users can access heading data (about Z axis)
   - Users can also access raw gyro data (X, Y, & Z axes).
   - Example MRGyroTest.java OpMode included.
- * Improved error messages
-  - More descriptive error messages for exceptions in user code.
+ * Improved error RoadRunner.messages
+  - More descriptive error RoadRunner.messages for exceptions in user code.
  * Updated DcMotor API
  * Enable read mode on new address in setI2cAddress
  * Fix so that driver station app resets the gamepads when switching OpModes.
- * USB-related code changes to make USB comm more responsive and to display more explicit error messages.
+ * USB-related code changes to make USB comm more responsive and to display more explicit error RoadRunner.messages.
   - Fix so that USB will recover properly if the USB bus returns garbage data.
   - Fix USB initializtion race condition.
   - Better error reporting during FTDI open.
-  - More explicit messages during USB failures.
+  - More explicit RoadRunner.messages during USB failures.
   - Fixed bug so that USB device is closed if event loop teardown method was not called.
  * Fixed timer UI issue
  * Fixed duplicate name UI bug (Legacy Module configuration).
