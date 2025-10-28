@@ -90,10 +90,18 @@ public class TeleOpBasic extends LinearOpMode {
                 flyWheelOn = !flyWheelOn;
             }
 
-            robot.scoringMechanisms.flyWheel.setVelocity(flyWheelOn ? (5 * (2 * Math.PI)) : (0 * (2 * Math.PI)), AngleUnit.RADIANS);
+            int rotations = 25;
+            robot.scoringMechanisms.flyWheel.setVelocity(flyWheelOn ? (rotations * (360)) : (0), AngleUnit.DEGREES);
 
-            telemetry.addData("Flywheel", flyWheelOn ? ("(ON) Speed at " + robot.scoringMechanisms.flyWheel.getVelocity()) : ("(OFF) Speed at " + robot.scoringMechanisms.flyWheel.getVelocity()));
+            double velocity = 5 * robot.scoringMechanisms.flyWheel.getVelocity(AngleUnit.DEGREES);
+            telemetry.addData("Flywheel", flyWheelOn ? "(ON)" : "(OFF)");
+            telemetry.addData("Target Velocity (deg/s)", flyWheelOn ? (rotations * (5 * 360)) : (0));
+            telemetry.addData("Measured Velocity (deg/s)", velocity);
+            telemetry.addData("Measured Velocity (rev/s)", velocity / 360.0);
             telemetry.update();
+
+//            telemetry.addData("Flywheel", flyWheelOn ? ("(ON) Speed at " + robot.scoringMechanisms.flyWheel.getVelocity(AngleUnit.DEGREES) + " per second") : ("(OFF) Speed at " + robot.scoringMechanisms.flyWheel.getVelocity(AngleUnit.DEGREES) + " per second"));
+//            telemetry.update();
 
         }
     }

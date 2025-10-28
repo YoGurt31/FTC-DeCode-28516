@@ -1,6 +1,7 @@
 package Systems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -83,14 +84,13 @@ public class Robot {
 
             flyWheel = hardwareMap.get(DcMotorEx.class, "fW");
 
-            // TODO: Temporary
-            flyWheel.setDirection(DcMotorEx.Direction.FORWARD);
+            flyWheel.setDirection(DcMotorEx.Direction.REVERSE);
 
             flyWheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
 
             flyWheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-            flyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            flyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
     }
 
