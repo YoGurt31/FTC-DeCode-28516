@@ -14,16 +14,16 @@ import Systems.Robot;
  * Includes Driving, Strafing, and Rotating
  *
  * Controls (GamePad1):
- * - Left Analog X:      Strafes Robot Left and Right
- * - Left Analog Y:      Drives Robot Forward and Backwards
- * - Right Analog X:     Rotates Robot Left and Right
- * - Right Analog Y:     N/A
+ * - Left Analog X:      Rotates Robot Left and Right
+ * - Left Analog Y:      N/A
+ * - Right Analog X:     Strafes Robot Left and Right
+ * - Right Analog Y:     Drives Robot Forward and Backwards
  * - Left Bumper:        Returns Function
  * - Left Trigger:       Returns Function
  * - Right Bumper:       Starts & Stops (Toggles) Fly Wheel
  * - Right Trigger:      Returns Function
- * - DPad Up:            Returns Function
- * - DPad Down:          Returns Function
+ * - DPad Up:            Increases FlyWheel RPS by 1
+ * - DPad Down:          Decreases FlyWheel RPS by 1
  * - DPad Left:          Returns Function
  * - DPad Right:         Returns Function
  * - FaceButton Up:      Returns Function
@@ -32,7 +32,7 @@ import Systems.Robot;
  * - FaceButton Right:   Returns Function
  *
  * @Author Saavin
- * @Version 1.0
+ * @Version 1.5
  */
 
 @TeleOp(name = "Basic Mecanum", group = "TeleOp")
@@ -42,6 +42,7 @@ public class TeleOpBasic extends LinearOpMode {
     private final Robot robot = new Robot();
 
     private boolean flyWheelOn = false;
+    private int RPS = 10;
 
     @Override
     public void runOpMode() {
@@ -56,9 +57,9 @@ public class TeleOpBasic extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double drive   = -gamepad1.left_stick_y;
-            double strafe  =  gamepad1.left_stick_x;
-            double rotate  =  gamepad1.right_stick_x;
+            double drive   = -gamepad1.right_stick_y;
+            double strafe  =  gamepad1.right_stick_x;
+            double rotate  =  gamepad1.left_stick_x;
 
             double frontLeftPower  = drive + strafe + rotate;
             double frontRightPower = drive - strafe - rotate;
@@ -90,7 +91,15 @@ public class TeleOpBasic extends LinearOpMode {
                 flyWheelOn = !flyWheelOn;
             }
 
-            double targetFlywheelRps = flyWheelOn ? 25.0 : 0.0;
+            if (gamepad1.dpadUpWasPressed() && (RPS < 50)) {
+                RPS++;
+            }
+
+            if (gamepad1.dpadDownWasPressed() && (RPS > 0)) {
+                RPS--;
+            }
+
+            double targetFlywheelRps = flyWheelOn ? RPS : 0.0;
             double measuredFlywheelRps = (robot.scoringMechanisms.flyWheel.getVelocity(AngleUnit.DEGREES) / 360.0) * 5.0;
             robot.scoringMechanisms.flyWheel.setVelocity((targetFlywheelRps * 360.0 * 0.2), AngleUnit.DEGREES);
 
