@@ -12,7 +12,7 @@ import Systems.Robot;
  * Title: TeleOpBasic - Designed for FTC Decode 2025-26
  * Desc: Basic TeleOp for a 4-Motor Mecanum DriveTrain
  * Includes Driving, Strafing, and Rotating
- *
+ * <p>
  * Controls (GamePad1):
  * - Left Analog X:      Rotates Robot Left and Right
  * - Left Analog Y:      N/A
@@ -21,7 +21,7 @@ import Systems.Robot;
  * - Left Bumper:        Returns Function
  * - Left Trigger:       Returns Function
  * - Right Bumper:       Starts & Stops (Toggles) Fly Wheel
- * - Right Trigger:      Returns Function
+ * - Right Trigger:      Intakes
  * - DPad Up:            Increases FlyWheel RPS by 1
  * - DPad Down:          Decreases FlyWheel RPS by 1
  * - DPad Left:          Returns Function
@@ -42,7 +42,11 @@ public class TeleOpBasic extends LinearOpMode {
     private final Robot robot = new Robot();
 
     private boolean flyWheelOn = false;
-    private int RPS = 10;
+    private int RPS = 25;
+    private static final double TicksPerRev = 145.1;
+    private double gearRatioMotorToFlyWheel = 0.2;
+    private double gearRatioFlyWheelToMotor = 5.0;
+
 
     @Override
     public void runOpMode() {
@@ -57,27 +61,27 @@ public class TeleOpBasic extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double drive   = -gamepad1.right_stick_y;
-            double strafe  =  gamepad1.right_stick_x;
-            double rotate  =  gamepad1.left_stick_x;
+            double drive = -gamepad1.right_stick_y;
+            double strafe = gamepad1.right_stick_x;
+            double rotate = gamepad1.left_stick_x;
 
-            double frontLeftPower  = drive + strafe + rotate;
+            double frontLeftPower = drive + strafe + rotate;
             double frontRightPower = drive - strafe - rotate;
-            double backLeftPower   = drive - strafe + rotate;
-            double backRightPower  = drive + strafe - rotate;
+            double backLeftPower = drive - strafe + rotate;
+            double backRightPower = drive + strafe - rotate;
 
             // Prevents Motors from Exceeding 100% Power
-            double[] powers = { frontLeftPower, frontRightPower, backLeftPower, backRightPower };
+            double[] powers = {frontLeftPower, frontRightPower, backLeftPower, backRightPower};
             double maxPower = 0.0;
             for (double p : powers) {
                 maxPower = Math.max(maxPower, Math.abs(p));
             }
 
             if (maxPower > 1.0) {
-                frontLeftPower  /= maxPower;
+                frontLeftPower /= maxPower;
                 frontRightPower /= maxPower;
-                backLeftPower   /= maxPower;
-                backRightPower  /= maxPower;
+                backLeftPower /= maxPower;
+                backRightPower /= maxPower;
             }
 
             robot.driveTrain.mecDrive(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
@@ -86,12 +90,21 @@ public class TeleOpBasic extends LinearOpMode {
                 robot.driveTrain.brake();
             }
 
+            // Intake Control
+            if (gamepad1.dpad_left/*gamepad1.right_trigger != 0*/) {
+                robot.scoringMechanisms.rollerIntake.setPower(0.75);
+            } else if (gamepad1.dpad_right/*gamepad1.left_trigger != 0*/) {
+                robot.scoringMechanisms.rollerIntake.setPower(-0.75);
+            } else {
+                robot.scoringMechanisms.rollerIntake.setPower(0.0);
+            }
+
             // Fly Wheel Control
             if (gamepad1.rightBumperWasPressed()) {
                 flyWheelOn = !flyWheelOn;
             }
 
-            if (gamepad1.dpadUpWasPressed() && (RPS < 50)) {
+            if (gamepad1.dpadUpWasPressed() && (RPS < 300)) {
                 RPS++;
             }
 
@@ -100,8 +113,8 @@ public class TeleOpBasic extends LinearOpMode {
             }
 
             double targetFlywheelRps = flyWheelOn ? RPS : 0.0;
-            double measuredFlywheelRps = (robot.scoringMechanisms.flyWheel.getVelocity(AngleUnit.DEGREES) / 360.0) * 5.0;
-            robot.scoringMechanisms.flyWheel.setVelocity((targetFlywheelRps * 360.0 * 0.2), AngleUnit.DEGREES);
+            double measuredFlywheelRps = (robot.scoringMechanisms.flyWheel.getVelocity() / TicksPerRev) * gearRatioFlyWheelToMotor;
+            robot.scoringMechanisms.flyWheel.setVelocity((targetFlywheelRps * TicksPerRev) * gearRatioMotorToFlyWheel);
 
             telemetry.addData("Flywheel", flyWheelOn ? "(ON)" : "(OFF)");
             telemetry.addData("Target Velocity (RPS)", targetFlywheelRps);

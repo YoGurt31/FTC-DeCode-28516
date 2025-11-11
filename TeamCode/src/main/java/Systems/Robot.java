@@ -1,5 +1,6 @@
 package Systems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -17,7 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
  * Includes Universal and General Functions
  *
  * @Author Saavin
- * @Version 1.0
+ * @Version 1.5
  */
 
 public class Robot {
@@ -79,18 +80,18 @@ public class Robot {
     public class ScoringMechanisms {
         // Hardware Devices
         public DcMotorEx flyWheel;
+        public CRServo rollerIntake;
 
         public void init(HardwareMap hardwareMap) {
 
             flyWheel = hardwareMap.get(DcMotorEx.class, "fW");
-
-            flyWheel.setDirection(DcMotorEx.Direction.REVERSE);
-
+            flyWheel.setDirection(DcMotorEx.Direction.FORWARD);
             flyWheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
             flyWheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            flyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-            flyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rollerIntake = hardwareMap.get(CRServo.class, "rI");
+            rollerIntake.setDirection(CRServo.Direction.REVERSE);
         }
     }
 
