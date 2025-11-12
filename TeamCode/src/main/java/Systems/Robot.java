@@ -2,15 +2,12 @@ package Systems;
 
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 /**
  * Title: Robot - Container Class for Decode Robot
@@ -61,11 +58,30 @@ public class Robot {
 
         }
 
-        public void mecDrive(double flPower, double frPower, double blPower, double brPower) {
-            frontLeft.setPower(flPower);
-            frontRight.setPower(frPower);
-            backLeft.setPower(blPower);
-            backRight.setPower(brPower);
+        public void mecDrive(double Drive, double Strafe, double Rotate) {
+            double frontLeftPower = Drive - Strafe - Rotate;
+            double frontRightPower = Drive + Strafe + Rotate;
+            double backLeftPower = Drive + Strafe - Rotate;
+            double backRightPower = Drive - Strafe + Rotate;
+
+            // Prevents Motors from Exceeding 100% Power
+            double[] powers = {frontLeftPower, frontRightPower, backLeftPower, backRightPower};
+            double maxPower = 0.0;
+            for (double p : powers) {
+                maxPower = Math.max(maxPower, Math.abs(p));
+            }
+
+            if (maxPower > 1.0) {
+                frontLeftPower /= maxPower;
+                frontRightPower /= maxPower;
+                backLeftPower /= maxPower;
+                backRightPower /= maxPower;
+            }
+
+            frontLeft.setPower(frontLeftPower);
+            frontRight.setPower(frontRightPower);
+            backLeft.setPower(backLeftPower);
+            backRight.setPower(backRightPower);
         }
 
         public void brake() {
@@ -78,7 +94,6 @@ public class Robot {
     }
 
     public class ScoringMechanisms {
-        // Hardware Devices
         public DcMotorEx flyWheel;
         public CRServo rollerIntake;
 
@@ -95,13 +110,27 @@ public class Robot {
         }
     }
 
+    public class Vision {
+        public org.firstinspires.ftc.vision.VisionPortal visionPortal;
+        public AprilTagProcessor aprilTag;
+        public AprilTagDetection desiredTag = null;
+
+        public void init(HardwareMap hardwareMap) {
+            visionPortal = org.firstinspires.ftc.vision.VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam"), aprilTag);
+            aprilTag = AprilTagProcessor.easyCreateWithDefaults();
+
+        }
+    }
+
     // Created Instances of Subsystems
     public DriveTrain driveTrain = new DriveTrain();
     public ScoringMechanisms scoringMechanisms = new ScoringMechanisms();
+    public Vision vision = new Vision();
 
     // Initialize Hardware
     public void init(HardwareMap hwMap) {
         driveTrain.init(hwMap);
         scoringMechanisms.init(hwMap);
+        vision.init(hwMap);
     }
 }
