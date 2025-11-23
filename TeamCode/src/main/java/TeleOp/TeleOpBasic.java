@@ -46,19 +46,20 @@ public class TeleOpBasic extends LinearOpMode {
 
     // FlyWheel Variables
     private boolean flyWheelOn = false;
-    private int RPS = 25;
-    private static final double TicksPerRev = 145.1;
+    private int RPS = 5000;
+    // TODO: ENSURE ACCURATE TICKS PER REVOLUTION
+    private static final double TicksPerRev = 28;
     private double gearRatioMotorToFlyWheel = 0.2;
     private double gearRatioFlyWheelToMotor = 5.0;
 
     // AprilTag / Vision Variables
     final double distance = 12.0; //  this is how close the camera should get to the target (inches)
 
-    final double driveGain  =  0.020;   //  Forward Speed Control "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
-    final double strafeGain =  0.015;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
-    final double rotateGain =  0.010;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    final double driveGain = 0.020;   //  Forward Speed Control  "Gain". e.g. Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    final double strafeGain = 0.015;   //  Strafe Speed Control "Gain".  e.g. Ramp up to 37% power at a 25 degree Yaw error.   (0.375 / 25.0)
+    final double rotateGain = 0.010;   //  Turn Control "Gain".  e.g. Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
 
-    final double maxDrive  = 0.50;   //  Clip the approach speed to this max value (adjust for your robot)
+    final double maxDrive = 0.50;   //  Clip the approach speed to this max value (adjust for your robot)
     final double maxStrafe = 0.50;   //  Clip the strafing speed to this max value (adjust for your robot)
     final double maxRotate = 0.25;   //  Clip the turn speed to this max value (adjust for your robot)
 
@@ -69,7 +70,6 @@ public class TeleOpBasic extends LinearOpMode {
         FtcDashboard.getInstance().startCameraStream(robot.vision.visionPortal, 20);
 
         double drive = 0, strafe = 0, rotate = 0;
-        boolean targetFound = false;
 
         telemetry.addLine("Status: Initialized. Ready to start.");
         telemetry.update();
@@ -80,44 +80,45 @@ public class TeleOpBasic extends LinearOpMode {
         while (opModeIsActive()) {
 
             // AprilTag Targeting
-            boolean activeTargeting = gamepad1.left_bumper;
+            boolean activeTargeting = gamepad1.square;
+            boolean targetFound = false;
+            robot.vision.desiredTag = null;
 
             List<AprilTagDetection> currentDetections = robot.vision.aprilTag.getDetections();
             for (AprilTagDetection detection : currentDetections) {
                 if (detection.metadata != null) {
-                    if (detection.id == -1) {
-                        targetFound = true;
-                        robot.vision.desiredTag = detection;
-                        break;
-                    }
+                    targetFound = true;
+                    robot.vision.desiredTag = detection;
+                    break;
                 } else {
+
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
                 }
             }
 
             if (targetFound) {
                 telemetry.addData("Found", "ID %d (%s)", robot.vision.desiredTag.id, robot.vision.desiredTag.metadata.name);
-                telemetry.addData("Range",  "%5.1f inches", robot.vision.desiredTag.ftcPose.range);
-                telemetry.addData("Bearing","%3.0f degrees", robot.vision.desiredTag.ftcPose.bearing);
-                telemetry.addData("Yaw","%3.0f degrees", robot.vision.desiredTag.ftcPose.yaw);
+                telemetry.addData("Range", "%5.1f inches", robot.vision.desiredTag.ftcPose.range);
+                telemetry.addData("Bearing", "%3.0f degrees", robot.vision.desiredTag.ftcPose.bearing);
+                telemetry.addData("Yaw", "%3.0f degrees", robot.vision.desiredTag.ftcPose.yaw);
             }
 
             if (activeTargeting && targetFound) {
-                double rangeError    = (robot.vision.desiredTag.ftcPose.range - distance);
-                double headingError  = (robot.vision.desiredTag.ftcPose.bearing);
-                double yawError      = (robot.vision.desiredTag.ftcPose.yaw);
+                double rangeError = (robot.vision.desiredTag.ftcPose.range - distance);
+                double headingError = (robot.vision.desiredTag.ftcPose.bearing);
+                double yawError = (robot.vision.desiredTag.ftcPose.yaw);
 
-                drive  = Range.clip(rangeError * driveGain, -maxDrive, maxDrive);
+                drive = Range.clip(rangeError * driveGain, -maxDrive, maxDrive);
                 strafe = Range.clip(headingError * strafeGain, -maxStrafe, maxStrafe);
                 rotate = Range.clip(yawError * rotateGain, -maxRotate, maxRotate);
-                
-                telemetry.addData("Auto","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, rotate);
+
+                telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, rotate);
             } else {
-                drive  = -gamepad1.right_stick_y;
+                drive = -gamepad1.right_stick_y;
                 strafe = -gamepad1.right_stick_x;
                 rotate = -gamepad1.left_stick_x;
 
-                telemetry.addData("Manual","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, rotate);
+                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, rotate);
             }
 
             robot.driveTrain.mecDrive(drive, strafe, rotate);
@@ -136,17 +137,18 @@ public class TeleOpBasic extends LinearOpMode {
                 flyWheelOn = !flyWheelOn;
             }
 
-            if (gamepad1.dpadUpWasPressed() && (RPS < 300)) {
-                RPS++;
+            if (gamepad1.dpadUpWasPressed() && (RPS < 5000)) {
+                RPS += 100;
             }
 
             if (gamepad1.dpadDownWasPressed() && (RPS > 0)) {
-                RPS--;
+                RPS -= 100;
             }
 
             double targetFlywheelRps = flyWheelOn ? RPS : 0.0;
-            double measuredFlywheelRps = (robot.scoringMechanisms.flyWheel.getVelocity() / TicksPerRev) * gearRatioFlyWheelToMotor;
-            robot.scoringMechanisms.flyWheel.setVelocity((targetFlywheelRps * TicksPerRev) * gearRatioMotorToFlyWheel);
+            double measuredFlywheelRps = (robot.scoringMechanisms.flyWheel1.getVelocity() / TicksPerRev) /** gearRatioFlyWheelToMotor*/;
+            robot.scoringMechanisms.flyWheel1.setVelocity((targetFlywheelRps * TicksPerRev) /** gearRatioMotorToFlyWheel*/);
+            robot.scoringMechanisms.flyWheel2.setVelocity((targetFlywheelRps * TicksPerRev) /** gearRatioMotorToFlyWheel*/);
 
             telemetry.addData("Flywheel", flyWheelOn ? "(ON)" : "(OFF)");
             telemetry.addData("Target Velocity (RPS)", targetFlywheelRps);
@@ -156,7 +158,10 @@ public class TeleOpBasic extends LinearOpMode {
         }
 
         if (robot.vision.visionPortal != null) {
-            try { robot.vision.visionPortal.close(); } catch (Exception ignored) {}
+            try {
+                robot.vision.visionPortal.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 }

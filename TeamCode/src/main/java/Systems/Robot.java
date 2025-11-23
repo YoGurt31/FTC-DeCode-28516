@@ -1,11 +1,12 @@
 package Systems;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
@@ -94,31 +95,39 @@ public class Robot {
     }
 
     public class ScoringMechanisms {
-        public DcMotorEx flyWheel;
-        public CRServo rollerIntake;
+        public DcMotorEx flyWheel1, flyWheel2, rollerIntake;
 
         public void init(HardwareMap hardwareMap) {
 
-            flyWheel = hardwareMap.get(DcMotorEx.class, "fW");
-            flyWheel.setDirection(DcMotorEx.Direction.FORWARD);
-            flyWheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            flyWheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            flyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            flyWheel1 = hardwareMap.get(DcMotorEx.class, "fW1");
+            flyWheel1.setDirection(DcMotorEx.Direction.REVERSE);
+            flyWheel1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            flyWheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            flyWheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-            rollerIntake = hardwareMap.get(CRServo.class, "rI");
-            rollerIntake.setDirection(CRServo.Direction.REVERSE);
+            flyWheel2 = hardwareMap.get(DcMotorEx.class, "fW2");
+            flyWheel2.setDirection(DcMotorEx.Direction.FORWARD);
+            flyWheel2.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            flyWheel2.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            flyWheel2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+            rollerIntake = hardwareMap.get(DcMotorEx.class, "rI");
+            rollerIntake.setDirection(DcMotorEx.Direction.FORWARD);
+            rollerIntake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            rollerIntake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            rollerIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         }
     }
 
     public class Vision {
-        public org.firstinspires.ftc.vision.VisionPortal visionPortal;
+        public VisionPortal visionPortal;
         public AprilTagProcessor aprilTag;
         public AprilTagDetection desiredTag = null;
 
         public void init(HardwareMap hardwareMap) {
-            visionPortal = org.firstinspires.ftc.vision.VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam"), aprilTag);
             aprilTag = AprilTagProcessor.easyCreateWithDefaults();
-
+            visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam"), aprilTag);
         }
     }
 
@@ -126,6 +135,7 @@ public class Robot {
     public DriveTrain driveTrain = new DriveTrain();
     public ScoringMechanisms scoringMechanisms = new ScoringMechanisms();
     public Vision vision = new Vision();
+
 
     // Initialize Hardware
     public void init(HardwareMap hwMap) {
