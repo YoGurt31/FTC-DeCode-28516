@@ -46,11 +46,9 @@ public class TeleOpBasic extends LinearOpMode {
 
     // FlyWheel Variables
     private boolean flyWheelOn = false;
-    private int RPS = 5000;
+    private int RPS = 55;
     // TODO: ENSURE ACCURATE TICKS PER REVOLUTION
     private static final double TicksPerRev = 28;
-    private double gearRatioMotorToFlyWheel = 0.2;
-    private double gearRatioFlyWheelToMotor = 5.0;
 
     // AprilTag / Vision Variables
     final double distance = 12.0; //  this is how close the camera should get to the target (inches)
@@ -137,18 +135,17 @@ public class TeleOpBasic extends LinearOpMode {
                 flyWheelOn = !flyWheelOn;
             }
 
-            if (gamepad1.dpadUpWasPressed() && (RPS < 5000)) {
-                RPS += 100;
+            if (gamepad1.dpadUpWasPressed() && (RPS < 1000)) {
+                RPS += 10;
             }
 
             if (gamepad1.dpadDownWasPressed() && (RPS > 0)) {
-                RPS -= 100;
+                RPS -= 10;
             }
 
             double targetFlywheelRps = flyWheelOn ? RPS : 0.0;
-            double measuredFlywheelRps = (robot.scoringMechanisms.flyWheel1.getVelocity() / TicksPerRev) /** gearRatioFlyWheelToMotor*/;
-            robot.scoringMechanisms.flyWheel1.setVelocity((targetFlywheelRps * TicksPerRev) /** gearRatioMotorToFlyWheel*/);
-            robot.scoringMechanisms.flyWheel2.setVelocity((targetFlywheelRps * TicksPerRev) /** gearRatioMotorToFlyWheel*/);
+            double measuredFlywheelRps = (robot.scoringMechanisms.flyWheel1.getVelocity() / TicksPerRev);
+            robot.scoringMechanisms.flyWheel1.setVelocity((targetFlywheelRps * TicksPerRev));
 
             telemetry.addData("Flywheel", flyWheelOn ? "(ON)" : "(OFF)");
             telemetry.addData("Target Velocity (RPS)", targetFlywheelRps);
