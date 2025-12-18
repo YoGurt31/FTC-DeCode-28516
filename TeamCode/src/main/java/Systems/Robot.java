@@ -1,5 +1,6 @@
 package Systems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -95,8 +96,8 @@ public class Robot {
     }
 
     public class ScoringMechanisms {
-        public DcMotorEx flyWheel1, rollerIntake;
-
+        public DcMotorEx flyWheel1, rollerIntake1;
+        public CRServo rollerIntake2;
         public void init(HardwareMap hardwareMap) {
 
             flyWheel1 = hardwareMap.get(DcMotorEx.class, "fW");
@@ -105,13 +106,17 @@ public class Robot {
             flyWheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             flyWheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-            rollerIntake = hardwareMap.get(DcMotorEx.class, "rI");
-            rollerIntake.setDirection(DcMotorEx.Direction.FORWARD);
-            rollerIntake.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-            rollerIntake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            rollerIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            rollerIntake1 = hardwareMap.get(DcMotorEx.class, "rI");
+            rollerIntake1.setDirection(DcMotorEx.Direction.FORWARD);
+            rollerIntake1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+            rollerIntake1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+            rollerIntake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        }
+            rollerIntake2 = hardwareMap.get(CRServo.class, "rII");
+            rollerIntake2.setDirection(CRServo.Direction.FORWARD);
+
+
+            }
     }
 
     public class Vision {
@@ -124,6 +129,7 @@ public class Robot {
             visionPortal = VisionPortal.easyCreateWithDefaults(hardwareMap.get(WebcamName.class, "Webcam"), aprilTag);
         }
     }
+
 
     // Created Instances of Subsystems
     public DriveTrain driveTrain = new DriveTrain();

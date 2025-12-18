@@ -123,12 +123,17 @@ public class TeleOpBasic extends LinearOpMode {
 
             // Intake Control
             if (gamepad1.dpad_left/*gamepad1.right_trigger != 0*/) {
-                robot.scoringMechanisms.rollerIntake.setPower(0.75);
+                robot.scoringMechanisms.rollerIntake1.setPower(0.75);
             } else if (gamepad1.dpad_right/*gamepad1.left_trigger != 0*/) {
-                robot.scoringMechanisms.rollerIntake.setPower(-0.75);
+                robot.scoringMechanisms.rollerIntake1.setPower(-0.75);
             } else {
-                robot.scoringMechanisms.rollerIntake.setPower(0.0);
+                robot.scoringMechanisms.rollerIntake1.setPower(0.0);
             }
+
+            if (gamepad1.circle){
+                robot.scoringMechanisms.rollerIntake2.setPower(0.75);
+            } else robot.scoringMechanisms.rollerIntake2.setPower(0.0);
+
 
             // Fly Wheel Control
             if (gamepad1.rightBumperWasPressed()) {
