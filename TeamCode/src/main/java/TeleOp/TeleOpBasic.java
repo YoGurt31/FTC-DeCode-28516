@@ -38,7 +38,7 @@ import Systems.Robot;
  * @Version 1.5
  */
 
-@TeleOp(name = "Basic Mecanum", group = "TeleOp")
+@TeleOp(name = "TeleOp", group = "TeleOp")
 public class TeleOpBasic extends LinearOpMode {
 
     // Robot Instance
@@ -46,8 +46,7 @@ public class TeleOpBasic extends LinearOpMode {
 
     // FlyWheel Variables
     private boolean flyWheelOn = false;
-    private int RPS = 55;
-    // TODO: ENSURE ACCURATE TICKS PER REVOLUTION
+    private int RPS = 45;
     private static final double TicksPerRev = 28;
 
     // AprilTag / Vision Variables
@@ -109,14 +108,10 @@ public class TeleOpBasic extends LinearOpMode {
                 drive = Range.clip(rangeError * driveGain, -maxDrive, maxDrive);
                 strafe = Range.clip(headingError * strafeGain, -maxStrafe, maxStrafe);
                 rotate = Range.clip(yawError * rotateGain, -maxRotate, maxRotate);
-
-                telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, rotate);
             } else {
                 drive = -gamepad1.right_stick_y;
                 strafe = -gamepad1.right_stick_x;
                 rotate = -gamepad1.left_stick_x;
-
-                telemetry.addData("Manual", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, rotate);
             }
 
             robot.driveTrain.mecDrive(drive, strafe, rotate);
@@ -130,22 +125,17 @@ public class TeleOpBasic extends LinearOpMode {
                 robot.scoringMechanisms.rollerIntake1.setPower(0.0);
             }
 
-            if (gamepad1.circle){
-                robot.scoringMechanisms.rollerIntake2.setPower(0.75);
-            } else robot.scoringMechanisms.rollerIntake2.setPower(0.0);
-
-
             // Fly Wheel Control
             if (gamepad1.rightBumperWasPressed()) {
                 flyWheelOn = !flyWheelOn;
             }
 
-            if (gamepad1.dpadUpWasPressed() && (RPS < 1000)) {
-                RPS += 10;
+            if (gamepad1.dpadUpWasPressed() && (RPS < 100)) {
+                RPS += 1;
             }
 
             if (gamepad1.dpadDownWasPressed() && (RPS > 0)) {
-                RPS -= 10;
+                RPS -= 1;
             }
 
             double targetFlywheelRps = flyWheelOn ? RPS : 0.0;

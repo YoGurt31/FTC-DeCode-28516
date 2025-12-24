@@ -104,8 +104,6 @@ public class RobotAutoDriveByTime_Linear extends LinearOpMode {
         rightDrive.setPower(-TURN_SPEED);
         runtime.reset();
         while (opModeIsActive() && (runtime.seconds() < 1.3)) {
-            telemetry.addData("Path", "Leg 2: %4.1f S Elapsed", runtime.seconds());
-            telemetry.update();
         }
 
         // Step 3:  Drive Backward for 1 Second

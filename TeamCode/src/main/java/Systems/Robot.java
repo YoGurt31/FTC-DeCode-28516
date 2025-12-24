@@ -100,22 +100,23 @@ public class Robot {
         public CRServo rollerIntake2;
         public void init(HardwareMap hardwareMap) {
 
+            double F = 15.000;
+            double P = 2 * F;
+            double I = 00.000;
+            double D = 00.000;
+
             flyWheel1 = hardwareMap.get(DcMotorEx.class, "fW");
             flyWheel1.setDirection(DcMotorEx.Direction.FORWARD);
             flyWheel1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             flyWheel1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             flyWheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            flyWheel1.setVelocityPIDFCoefficients(P, I, D, F);
 
             rollerIntake1 = hardwareMap.get(DcMotorEx.class, "rI");
             rollerIntake1.setDirection(DcMotorEx.Direction.FORWARD);
             rollerIntake1.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
             rollerIntake1.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
             rollerIntake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-            rollerIntake2 = hardwareMap.get(CRServo.class, "rII");
-            rollerIntake2.setDirection(CRServo.Direction.FORWARD);
-
-
             }
     }
 
