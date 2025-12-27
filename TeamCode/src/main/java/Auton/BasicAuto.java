@@ -12,7 +12,7 @@ public class BasicAuto extends LinearOpMode {
     private final Robot robot = new Robot();
 
     private static final double TICKS_PER_REV = 28.0;
-    private static final double TARGET_FLYWHEEL_RPS = 45.0;
+    private static final double TARGET_FLYWHEEL_RPS = 58.0;
     private static final double RPS_TOLERANCE = 1.5;
     private static final double STABLE_TIME_SEC = 0.20;
     private static final double SPINUP_TIMEOUT_SEC = 3.0;
