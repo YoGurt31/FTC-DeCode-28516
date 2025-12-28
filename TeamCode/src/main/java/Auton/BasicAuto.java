@@ -25,6 +25,8 @@ public class BasicAuto extends LinearOpMode {
     private static final long FEED_TIME_MS = 1000;
     private static final long BETWEEN_SHOTS_PAUSE_MS = 1000;
 
+    private ElapsedTime runtime = new ElapsedTime();
+
     @Override
     public void runOpMode() {
 
@@ -35,18 +37,24 @@ public class BasicAuto extends LinearOpMode {
 
         // Drive Backwards
         robot.driveTrain.mecDrive(DRIVE_BACK_POWER, 0.0, 0.0);
-        sleep(DRIVE_BACK_TIME_MS_1);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < DRIVE_BACK_TIME_MS_1)) {
+        }
 
         // Shoot 3 Artifacts
         for (int i = 0; i < 3 && opModeIsActive(); i++) {
             waitForFlywheelAtSpeed(TARGET_FLYWHEEL_RPS);
             feedOnce();
-            sleep(BETWEEN_SHOTS_PAUSE_MS);
+            runtime.reset();
+            while (opModeIsActive() && (runtime.seconds() < BETWEEN_SHOTS_PAUSE_MS)) {
+            }
         }
 
         // Drive Backwards
         robot.driveTrain.mecDrive(DRIVE_BACK_POWER, 0.0, 0.0);
-        sleep(DRIVE_BACK_TIME_MS_2);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < DRIVE_BACK_TIME_MS_2)) {
+        }
 
         // Stop
         robot.driveTrain.mecDrive(0.0, 0.0, 0.0);
@@ -56,7 +64,9 @@ public class BasicAuto extends LinearOpMode {
 
     private void feedOnce() {
         robot.scoringMechanisms.rollerIntake1.setPower(INTAKE_FEED_POWER);
-        sleep(FEED_TIME_MS);
+        runtime.reset();
+        while (opModeIsActive() && (runtime.seconds() < FEED_TIME_MS)) {
+        }
         robot.scoringMechanisms.rollerIntake1.setPower(0.0);
     }
 
