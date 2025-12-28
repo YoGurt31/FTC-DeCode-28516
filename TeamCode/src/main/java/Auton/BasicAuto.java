@@ -25,36 +25,34 @@ public class BasicAuto extends LinearOpMode {
     private static final long FEED_TIME_MS = 1000;
     private static final long BETWEEN_SHOTS_PAUSE_MS = 1000;
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
         robot.init(hardwareMap);
 
         waitForStart();
-        if (isStopRequested()) return;
+        if (!opModeIsActive()) return;
 
         // Drive Backwards
         robot.driveTrain.mecDrive(DRIVE_BACK_POWER, 0.0, 0.0);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < DRIVE_BACK_TIME_MS_1)) {
-        }
+        waitMs(DRIVE_BACK_TIME_MS_1);
+        robot.driveTrain.mecDrive(0.0, 0.0, 0.0);
+        sleep(150);
 
         // Shoot 3 Artifacts
         for (int i = 0; i < 3 && opModeIsActive(); i++) {
             waitForFlywheelAtSpeed(TARGET_FLYWHEEL_RPS);
             feedOnce();
-            runtime.reset();
-            while (opModeIsActive() && (runtime.seconds() < BETWEEN_SHOTS_PAUSE_MS)) {
-            }
+            waitMs(BETWEEN_SHOTS_PAUSE_MS);
         }
 
         // Drive Backwards
         robot.driveTrain.mecDrive(DRIVE_BACK_POWER, 0.0, 0.0);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < DRIVE_BACK_TIME_MS_2)) {
-        }
+        waitMs(DRIVE_BACK_TIME_MS_2);
+        robot.driveTrain.mecDrive(0.0, 0.0, 0.0);
+        sleep(150);
 
         // Stop
         robot.driveTrain.mecDrive(0.0, 0.0, 0.0);
@@ -64,9 +62,7 @@ public class BasicAuto extends LinearOpMode {
 
     private void feedOnce() {
         robot.scoringMechanisms.rollerIntake1.setPower(INTAKE_FEED_POWER);
-        runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < FEED_TIME_MS)) {
-        }
+        waitMs(FEED_TIME_MS);
         robot.scoringMechanisms.rollerIntake1.setPower(0.0);
     }
 
@@ -86,6 +82,13 @@ public class BasicAuto extends LinearOpMode {
                 stable.reset();
             }
             sleep(20);
+        }
+    }
+
+    private void waitMs(long ms) {
+        runtime.reset();
+        while (opModeIsActive() && runtime.milliseconds() < ms) {
+            idle();
         }
     }
 }

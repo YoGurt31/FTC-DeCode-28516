@@ -109,9 +109,9 @@ public class TeleOpBasic extends LinearOpMode {
                 strafe = Range.clip(headingError * strafeGain, -maxStrafe, maxStrafe);
                 rotate = Range.clip(yawError * rotateGain, -maxRotate, maxRotate);
             } else {
-                drive = -gamepad1.right_stick_y;
-                strafe = -gamepad1.right_stick_x;
-                rotate = -gamepad1.left_stick_x;
+                drive  = -gamepad1.left_stick_y;
+                strafe = -gamepad1.left_stick_x;
+                rotate = -gamepad1.right_stick_x;
             }
 
             robot.driveTrain.mecDrive(drive, strafe, rotate);
