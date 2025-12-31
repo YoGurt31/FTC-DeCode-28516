@@ -435,6 +435,312 @@
 //
 //
 // version 5
+//package Auton;
+//
+//import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+//import com.qualcomm.robotcore.hardware.DcMotor;
+//import com.qualcomm.robotcore.hardware.DcMotorEx;
+//import com.qualcomm.robotcore.hardware.DcMotorSimple;
+//import com.qualcomm.robotcore.util.ElapsedTime;
+//
+//@Autonomous(name = "Mecanum Autonomous", group = "Autonomous")
+//public class BasicAuto extends LinearOpMode {
+//
+//    // ===== SHOOTER CONSTANTS =====
+//    private static final double TICKS_PER_REV        = 28.0;   // CHANGE if motor differs
+//    private static final double TARGET_FLYWHEEL_RPS  = 35;
+//    private static final double RPS_TOLERANCE        = 1.5;
+//    private static final double STABLE_TIME_SEC      = 0.20;
+//    private static final double SPINUP_TIMEOUT_SEC   = 3.0;
+//
+//    private static final double INTAKE_FEED_POWER    = -0.75;
+//    private static final long   FEED_TIME_MS         = 500;
+//    private static final long   BETWEEN_SHOTS_PAUSE_MS = 500;
+//
+//    // ===== DRIVE CONSTANTS =====
+//    private static final double DRIVE_BACK_POWER     = -0.5;
+//    private static final long   DRIVE_BACK_TIME_MS   = 2000;
+//
+//    private final ElapsedTime runtime = new ElapsedTime();
+//
+//    // ===== MOTORS =====
+//    private DcMotor frontLeft, frontRight, backLeft, backRight;
+//    private DcMotorEx flyWheel1, rollerIntake1;
+//
+//    @Override
+//    public void runOpMode() {
+//
+//        // ===== MAP DRIVE MOTORS =====
+//        frontLeft  = hardwareMap.get(DcMotor.class, "fL");
+//        frontRight = hardwareMap.get(DcMotor.class, "fR");
+//        backLeft   = hardwareMap.get(DcMotor.class, "bL");
+//        backRight  = hardwareMap.get(DcMotor.class, "bR");
+//
+//        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//
+//        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        // ===== MAP FLYWHEEL =====
+//        flyWheel1 = hardwareMap.get(DcMotorEx.class, "fW");
+//        flyWheel1.setDirection(DcMotorSimple.Direction.FORWARD);
+//        flyWheel1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        flyWheel1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        flyWheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        flyWheel1.setVelocity(0);
+//
+//        // ===== MAP INTAKE =====
+//        rollerIntake1 = hardwareMap.get(DcMotorEx.class, "rI");
+//        rollerIntake1.setDirection(DcMotorSimple.Direction.FORWARD);
+//        rollerIntake1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rollerIntake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        rollerIntake1.setPower(0);
+//
+//        telemetry.addData("Status", "Initialized");
+//        telemetry.update();
+//
+//        // ===== WAIT FOR START =====
+//        waitForStart();
+//        if (!opModeIsActive()) return;
+//
+//        // ===== STEP 1: DRIVE BACKWARD =====
+//        setDrivePower(DRIVE_BACK_POWER);
+//        waitMs(DRIVE_BACK_TIME_MS);
+//        stopDrive();
+//        sleep(150);
+//
+//        // ===== STEP 2: SHOOT 3 artifacts =====
+//        for (int i = 0; i < 3 && opModeIsActive(); i++) {
+//            waitForFlywheelAtSpeed(TARGET_FLYWHEEL_RPS);
+//            feedOnce();
+//            waitMs(BETWEEN_SHOTS_PAUSE_MS);
+//        }
+//
+//        // ===== FINAL STOP =====
+//        stopDrive();
+//        flyWheel1.setVelocity(0);
+//        rollerIntake1.setPower(0);
+//
+//        telemetry.addData("Status", "Auto Complete");
+//        telemetry.update();
+//        sleep(1000);
+//    }
+//
+//    // ===== HELPER METHODS =====
+//
+//    private void setDrivePower(double p) {
+//        frontLeft.setPower(p);
+//        frontRight.setPower(p);
+//        backLeft.setPower(p);
+//        backRight.setPower(p);
+//    }
+//
+//    private void stopDrive() {
+//        setDrivePower(0);
+//    }
+//
+//    private void waitMs(long ms) {
+//        runtime.reset();
+//        while (opModeIsActive() && runtime.milliseconds() < ms) {
+//            idle();
+//        }
+//    }
+//
+//    private void feedOnce() {
+//        rollerIntake1.setPower(INTAKE_FEED_POWER);
+//        waitMs(FEED_TIME_MS);
+//        rollerIntake1.setPower(0);
+//    }
+//
+//    private void waitForFlywheelAtSpeed(double targetRps) {
+//        flyWheel1.setVelocity(targetRps * TICKS_PER_REV);
+//
+//        ElapsedTime timeout = new ElapsedTime();
+//        ElapsedTime stable  = new ElapsedTime();
+//        stable.reset();
+//
+//        while (opModeIsActive() && timeout.seconds() < SPINUP_TIMEOUT_SEC) {
+//            double currentRps = flyWheel1.getVelocity() / TICKS_PER_REV;
+//            boolean within = Math.abs(targetRps - currentRps) <= RPS_TOLERANCE;
+//
+//            telemetry.addData("Target RPS", targetRps);
+//            telemetry.addData("Current RPS", currentRps);
+//            telemetry.update();
+//
+//            if (within) {
+//                if (stable.seconds() >= STABLE_TIME_SEC) {
+//                    return; // ready to shoot
+//                }
+//            } else {
+//                stable.reset();
+//            }
+//
+//            sleep(20);
+//        }
+//        // timeout safety — continue anyway
+//    }
+//}
+//
+//
+//version 6
+//package Auton;
+//
+//import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+//import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+//import com.qualcomm.robotcore.hardware.DcMotor;
+//import com.qualcomm.robotcore.hardware.DcMotorEx;
+//import com.qualcomm.robotcore.hardware.DcMotorSimple;
+//import com.qualcomm.robotcore.util.ElapsedTime;
+//
+//@Autonomous(name = "Mecanum Autonomous", group = "Autonomous")
+//public class BasicAuto extends LinearOpMode {
+//
+//    // ===== SHOOTER CONSTANTS =====
+//    private static final double FLYWHEEL_POWER          = 0.38;   // tune this so it hits the target well
+//    private static final double INTAKE_FEED_POWER       = -0.75;
+//
+//    // Make the feed shorter and the pause longer so you can clearly see 1-shot cycles
+//    private static final long   FEED_TIME_MS            = 350;    // time intake runs to fire 1 ring
+//    private static final long   BETWEEN_SHOTS_PAUSE_MS  = 550;    // pause between shots (intake OFF)
+//
+//    // ===== DRIVE CONSTANTS =====
+//    private static final double DRIVE_BACK_POWER        = -0.65;
+//    private static final double DRIVE_FORWARD_POWER     = 0.65;
+//    private static final long   DRIVE_BACK_TIME_MS      = 2000;
+//
+//    private final ElapsedTime runtime = new ElapsedTime();
+//
+//    // ===== MOTORS =====
+//    private DcMotor   frontLeft, frontRight, backLeft, backRight;
+//    private DcMotorEx flyWheel1, rollerIntake1;
+//
+//    @Override
+//    public void runOpMode() {
+//
+//        // ===== MAP DRIVE MOTORS =====
+//        frontLeft  = hardwareMap.get(DcMotor.class, "fL");
+//        frontRight = hardwareMap.get(DcMotor.class, "fR");
+//        backLeft   = hardwareMap.get(DcMotor.class, "bL");
+//        backRight  = hardwareMap.get(DcMotor.class, "bR");
+//
+//        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//        backRight.setDirection(DcMotorSimple.Direction.FORWARD);
+//
+//        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//
+//        // ===== MAP FLYWHEEL =====
+//        flyWheel1 = hardwareMap.get(DcMotorEx.class, "fW");
+//        flyWheel1.setDirection(DcMotorSimple.Direction.FORWARD);
+//        flyWheel1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        flyWheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        flyWheel1.setPower(0);
+//
+//        // ===== MAP INTAKE =====
+//        rollerIntake1 = hardwareMap.get(DcMotorEx.class, "rI");
+//        rollerIntake1.setDirection(DcMotorSimple.Direction.FORWARD);
+//        rollerIntake1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        rollerIntake1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        rollerIntake1.setPower(0);
+//
+//        telemetry.addData("Status", "Initialized");
+//        telemetry.update();
+//
+//        // ===== WAIT FOR START =====
+//        waitForStart();
+//        if (!opModeIsActive()) return;
+//
+//        // ===== STEP 1: START FLYWHEEL (STAYS ON UNTIL THE END) =====
+//        flyWheel1.setPower(FLYWHEEL_POWER);
+//
+//        // ===== STEP 2: DRIVE BACKWARD WHILE FLYWHEEL SPINS =====
+//        runtime.reset();
+//        while (opModeIsActive() && runtime.milliseconds() < DRIVE_BACK_TIME_MS) {
+//            setDrivePower(DRIVE_BACK_POWER);
+//
+//            telemetry.addData("Driving Back (ms)", runtime.milliseconds());
+//            telemetry.addData("Flywheel Power", FLYWHEEL_POWER);
+//            telemetry.update();
+//
+//            idle();
+//        }
+//
+//        // Stop driving, BUT DO NOT TOUCH FLYWHEEL
+//        stopDrive();
+//        sleep(100); // tiny settle
+//
+//        // ===== STEP 3: SHOOT 3 RINGS ONE-BY-ONE (FLYWHEEL STILL SPINNING) =====
+//        for (int shot = 1; shot <= 3 && opModeIsActive(); shot++) {
+//            feedOneRingWithPause(shot);
+//        }
+//
+//        // ===== STEP 4: NOW STOP EVERYTHING =====
+//        stopDrive();
+//        rollerIntake1.setPower(0);
+//        flyWheel1.setPower(0);   // flywheel only stops AFTER intake is done
+//
+//        telemetry.addData("Status", "Auto Complete");
+//        telemetry.update();
+//        sleep(1400);
+//    }
+//
+//    // ===== HELPER METHODS =====
+//
+//    private void setDrivePower(double p) {
+//        frontLeft.setPower(p);
+//        frontRight.setPower(p);
+//        backLeft.setPower(p);
+//        backRight.setPower(p);
+//    }
+//
+//    private void stopDrive() {
+//        setDrivePower(0);
+//    }
+//
+//    private void waitMs(long ms) {
+//        runtime.reset();
+//        while (opModeIsActive() && runtime.milliseconds() < ms) {
+//            idle();
+//        }
+//    }
+//
+//    /**
+//     * Turn intake ON briefly to fire one ring,
+//     * then turn it OFF and pause before the next one.
+//     */
+//    private void feedOneRingWithPause(int shotNumber) {
+//        // Intake ON – push ring into flywheel
+//        telemetry.addData("Shot", shotNumber);
+//        telemetry.addLine("INTAKE: ON");
+//        telemetry.update();
+//
+//        rollerIntake1.setPower(INTAKE_FEED_POWER);
+//        waitMs(FEED_TIME_MS);
+//
+//        // Intake OFF – stop feeding
+//        rollerIntake1.setPower(0);
+//
+//        telemetry.addData("Shot", shotNumber);
+//        telemetry.addLine("INTAKE: OFF (pause)");
+//        telemetry.update();
+//
+//        // Pause before the next shot
+//        waitMs(BETWEEN_SHOTS_PAUSE_MS);
+//    }
+//}
+//
+//
+//version 7(with the rotate left)
 package Auton;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -448,24 +754,28 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class BasicAuto extends LinearOpMode {
 
     // ===== SHOOTER CONSTANTS =====
-    private static final double TICKS_PER_REV        = 28.0;   // CHANGE if motor differs
-    private static final double TARGET_FLYWHEEL_RPS  = 58.0;
-    private static final double RPS_TOLERANCE        = 1.5;
-    private static final double STABLE_TIME_SEC      = 0.20;
-    private static final double SPINUP_TIMEOUT_SEC   = 3.0;
+    private static final double FLYWHEEL_POWER          = 0.38;
+    private static final double INTAKE_FEED_POWER       = -0.75;
 
-    private static final double INTAKE_FEED_POWER    = -0.75;
-    private static final long   FEED_TIME_MS         = 500;
-    private static final long   BETWEEN_SHOTS_PAUSE_MS = 500;
+    // How long intake runs to fire ONE ball
+    private static final long   FEED_TIME_MS            = 500;
+
+    // Pauses between shots (in ms)
+    private static final long   PAUSE_AFTER_FIRST_SHOT_MS  = 1200; // extra pause before 2nd ball
+    private static final long   PAUSE_AFTER_SECOND_SHOT_MS = 800;  // normal pause before 3rd ball
 
     // ===== DRIVE CONSTANTS =====
-    private static final double DRIVE_BACK_POWER     = -0.5;
-    private static final long   DRIVE_BACK_TIME_MS   = 2000;
+    private static final double DRIVE_BACK_POWER        = -0.65;
+    private static final long   DRIVE_BACK_TIME_MS      = 1600;
+
+    // ===== ROTATE RIGHT CONSTANTS =====
+    private static final double ROTATE_RIGHT_POWER      = 0.4;   // rotation speed
+    private static final long   ROTATE_RIGHT_TIME_MS    = 1400;  // rotation duration
 
     private final ElapsedTime runtime = new ElapsedTime();
 
     // ===== MOTORS =====
-    private DcMotor frontLeft, frontRight, backLeft, backRight;
+    private DcMotor   frontLeft, frontRight, backLeft, backRight;
     private DcMotorEx flyWheel1, rollerIntake1;
 
     @Override
@@ -490,10 +800,9 @@ public class BasicAuto extends LinearOpMode {
         // ===== MAP FLYWHEEL =====
         flyWheel1 = hardwareMap.get(DcMotorEx.class, "fW");
         flyWheel1.setDirection(DcMotorSimple.Direction.FORWARD);
-        flyWheel1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flyWheel1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flyWheel1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        flyWheel1.setVelocity(0);
+        flyWheel1.setPower(0);
 
         // ===== MAP INTAKE =====
         rollerIntake1 = hardwareMap.get(DcMotorEx.class, "rI");
@@ -509,27 +818,70 @@ public class BasicAuto extends LinearOpMode {
         waitForStart();
         if (!opModeIsActive()) return;
 
-        // ===== STEP 1: DRIVE BACKWARD =====
-        setDrivePower(DRIVE_BACK_POWER);
-        waitMs(DRIVE_BACK_TIME_MS);
-        stopDrive();
-        sleep(150);
+        // ===== START FLYWHEEL =====
+        flyWheel1.setPower(FLYWHEEL_POWER);
 
-        // ===== STEP 2: SHOOT 3 artifacts =====
-        for (int i = 0; i < 3 && opModeIsActive(); i++) {
-            waitForFlywheelAtSpeed(TARGET_FLYWHEEL_RPS);
-            feedOnce();
-            waitMs(BETWEEN_SHOTS_PAUSE_MS);
+        // ===== DRIVE BACKWARD WHILE FLYWHEEL SPINS =====
+        runtime.reset();
+        while (opModeIsActive() && runtime.milliseconds() < DRIVE_BACK_TIME_MS) {
+            setDrivePower(DRIVE_BACK_POWER);
+
+            telemetry.addData("Driving Back (ms)", runtime.milliseconds());
+            telemetry.addData("Flywheel Power", FLYWHEEL_POWER);
+            telemetry.update();
+
+            idle();
         }
 
-        // ===== FINAL STOP =====
         stopDrive();
-        flyWheel1.setVelocity(0);
+        sleep(100);
+
+        // ===== SHOOT 3 BALLS (WITH CLEAR PAUSE BEFORE 2nd) =====
+        for (int shot = 1; shot <= 3 && opModeIsActive(); shot++) {
+
+            // Fire ONE ball
+            fireOneBall(shot);
+
+            // Pause logic between shots
+            if (shot == 1) {
+                // Extra-long pause before 2nd ball
+                telemetry.addData("Pause", "After shot 1 (before 2nd ball)");
+                telemetry.update();
+                waitMs(PAUSE_AFTER_FIRST_SHOT_MS);
+
+            } else if (shot == 2) {
+                // Normal pause before 3rd ball
+                telemetry.addData("Pause", "After shot 2 (before 3rd ball)");
+                telemetry.update();
+                waitMs(PAUSE_AFTER_SECOND_SHOT_MS);
+            }
+            // After 3rd shot, no extra pause needed
+        }
+
+        // ===== STOP INTAKE =====
         rollerIntake1.setPower(0);
+
+        // ===== OPTIONAL: keep flywheel on a bit longer (0.5s) =====
+        waitMs(500);
+        flyWheel1.setPower(0);
+
+        // ===== ROTATE RIGHT =====
+        runtime.reset();
+        while (opModeIsActive() && runtime.milliseconds() < ROTATE_RIGHT_TIME_MS) {
+            rotateRight(ROTATE_RIGHT_POWER);
+
+            telemetry.addData("Rotation", "ROTATE RIGHT");
+            telemetry.addData("Rotate Time (ms)", runtime.milliseconds());
+            telemetry.update();
+
+            idle();
+        }
+
+        stopDrive();
 
         telemetry.addData("Status", "Auto Complete");
         telemetry.update();
-        sleep(1000);
+        sleep((1550));
     }
 
     // ===== HELPER METHODS =====
@@ -552,38 +904,35 @@ public class BasicAuto extends LinearOpMode {
         }
     }
 
-    private void feedOnce() {
+    /**
+     * Fire exactly ONE ball by running intake for FEED_TIME_MS, then stopping.
+     */
+    private void fireOneBall(int shotNumber) {
+        telemetry.addData("Shot", shotNumber);
+        telemetry.addLine("INTAKE: ON");
+        telemetry.update();
+
         rollerIntake1.setPower(INTAKE_FEED_POWER);
         waitMs(FEED_TIME_MS);
+
         rollerIntake1.setPower(0);
+
+        telemetry.addData("Shot", shotNumber);
+        telemetry.addLine("INTAKE: OFF");
+        telemetry.update();
     }
 
-    private void waitForFlywheelAtSpeed(double targetRps) {
-        flyWheel1.setVelocity(targetRps * TICKS_PER_REV);
+    /**
+     * ROTATE RIGHT (Tank Spin)
+     * Right wheels forward, Left wheels backward.
+     */
+    private void rotateRight(double power) {
+        // Left side backward
+        frontLeft.setPower(-power);
+        backLeft.setPower(-power);
 
-        ElapsedTime timeout = new ElapsedTime();
-        ElapsedTime stable  = new ElapsedTime();
-        stable.reset();
-
-        while (opModeIsActive() && timeout.seconds() < SPINUP_TIMEOUT_SEC) {
-            double currentRps = flyWheel1.getVelocity() / TICKS_PER_REV;
-            boolean within = Math.abs(targetRps - currentRps) <= RPS_TOLERANCE;
-
-            telemetry.addData("Target RPS", targetRps);
-            telemetry.addData("Current RPS", currentRps);
-            telemetry.update();
-
-            if (within) {
-                if (stable.seconds() >= STABLE_TIME_SEC) {
-                    return; // ready to shoot
-                }
-            } else {
-                stable.reset();
-            }
-
-            sleep(20);
-        }
-        // timeout safety — continue anyway
+        // Right side forward
+        frontRight.setPower(power);
+        backRight.setPower(power);
     }
 }
-
